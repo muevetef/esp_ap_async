@@ -27,7 +27,7 @@ const char *myPass = "admin";
 const char* host = "10.10.1.3";
 const uint16_t port = 7878;
 const int relePin = 4;
-const int triggerTime = 2000;
+const unsigned int triggerTime = 250;
 WiFiClient client;
 
 void connectToServer();
@@ -82,10 +82,18 @@ void loop()
     Serial.println(data);
     if(data == "open"){
       digitalWrite(relePin, HIGH);
+      
       delay(triggerTime);
+
       digitalWrite(relePin,LOW);
-      client.flush();
       client.write("ok!\n");
+
+      delay(triggerTime * 4);
+      
+      while (client.available()) {
+        client.read();
+      }
+
     }
     if(data == "reset"){
       ESPAsync_wifiManager.resetSettings();
